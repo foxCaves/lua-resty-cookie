@@ -109,16 +109,12 @@ local function get_cookie_table(text_cookie)
     return cookie_table
 end
 
-function _M.new(self)
-    local _cookie = ngx.var.http_cookie
-    --if not _cookie then
-        --return nil, "no cookie found in current request"
-    --end
-    return setmetatable({ _cookie = _cookie, set_cookie_table = new_tab(4, 0) },
+function _M:new(defaults)
+    return setmetatable({ _cookie = ngx.var.http_cookie, _defaults = defaults, set_cookie_table = new_tab(4, 0) },
         { __index = self })
 end
 
-function _M.get(self, key)
+function _M:get(key)
     if not self._cookie then
         return nil, "no cookie found in the current request"
     end
@@ -129,7 +125,7 @@ function _M.get(self, key)
     return self.cookie_table[key]
 end
 
-function _M.get_all(self)
+function _M:get_all()
     if not self._cookie then
         return nil, "no cookie found in the current request"
     end
@@ -172,7 +168,18 @@ local function bake(cookie)
     return str
 end
 
-function _M.set(self, cookie)
+function _M:set(cookie)
+    if self._defaults then
+        for k, v in pairs(self._defaults) do
+            if cookie[k] == nil then
+                cookie[k] = v
+            end
+        end
+    end
+    if cookie.max_age and cookie.expires == nil then
+        cookie.expires = ngx.cookie_time(ngx.time() + cookie.max_age)
+    end
+
     local cookie_str, err = bake(cookie)
     if not cookie_str then
         return nil, err
@@ -210,6 +217,13 @@ function _M.set(self, cookie)
         ngx_header['Set-Cookie'] = cookie_str
     end
     return true
+end
+
+function _M.delete(self, cookie)
+    cookie.value = ""
+    cookie.max_age = -1
+    cookie.expires = "Thu, 01 Jan 1970 00:00:00 GMT"
+    return self:set(cookie)
 end
 
 return _M
