@@ -137,7 +137,7 @@ function _M:get_all()
     return self.cookie_table
 end
 
-function _M.get_cookie_size(self)
+function _M:get_cookie_size()
     if not self._cookie then
         return 0
     end
@@ -145,7 +145,7 @@ function _M.get_cookie_size(self)
     return string.len(self._cookie)
 end
 
-local function bake(cookie)
+function _M:get_cookie_string(cookie)
     if not cookie.key or not cookie.value then
         return nil, 'missing cookie field "key" or "value"'
     end
@@ -188,7 +188,7 @@ function _M:set(cookie)
         cookie.expires = ngx.cookie_time(ngx.time() + cookie.max_age)
     end
 
-    local cookie_str, err = bake(cookie)
+    local cookie_str, err = self:get_cookie_string(cookie)
     if not cookie_str then
         return nil, err
     end
@@ -227,13 +227,11 @@ function _M:set(cookie)
     return true
 end
 
-function _M.delete(self, cookie)
+function _M:delete(cookie)
     cookie.value = ""
     cookie.max_age = -1
     cookie.expires = "Thu, 01 Jan 1970 00:00:00 GMT"
     return self:set(cookie)
 end
-
-_M.get_cookie_string = bake
 
 return _M
