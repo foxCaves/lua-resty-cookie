@@ -13,6 +13,7 @@ local WARN          = ngx.WARN
 local ngx_header    = ngx.header
 local ngx           = ngx
 local setmetatable  = setmetatable
+local pairs         = pairs
 
 local EQUAL         = byte("=")
 local SEMICOLON     = byte(";")
