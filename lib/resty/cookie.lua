@@ -3,6 +3,7 @@
 -- require "luacov"
 
 local type          = type
+local string        = string
 local byte          = string.byte
 local sub           = string.sub
 local format        = string.format
@@ -11,6 +12,7 @@ local ERR           = ngx.ERR
 local WARN          = ngx.WARN
 local ngx_header    = ngx.header
 local ngx           = ngx
+local setmetatable  = setmetatable
 
 local EQUAL         = byte("=")
 local SEMICOLON     = byte(";")
@@ -157,7 +159,7 @@ function _M:get_cookie_string(cookie)
         cookie.max_age = cookie["max-age"]
     end
 
-    if (cookie.samesite) then
+    if cookie.samesite then
         local samesite = cookie.samesite
 
         -- if we don't have a valid-looking attribute, ignore the attribute
