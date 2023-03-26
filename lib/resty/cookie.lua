@@ -27,6 +27,8 @@ if not ok then
     clear_tab = function(tab) for k, _ in pairs(tab) do tab[k] = nil end end
 end
 
+setfenv(1, {})
+
 local _M = new_tab(0, 2)
 
 _M._VERSION = '0.01'
