@@ -10,6 +10,7 @@ local log           = ngx.log
 local ERR           = ngx.ERR
 local WARN          = ngx.WARN
 local ngx_header    = ngx.header
+local ngx           = ngx
 
 local EQUAL         = byte("=")
 local SEMICOLON     = byte(";")
